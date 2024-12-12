@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
+// Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.22;
 
-contract RentalPlatform {
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract RentalPlatform is ERC20("RentalPlatform", "RNP") {
     struct RentalItem {
         uint256 id; // Уникальный идентификатор предмета
         address owner; // Адрес владельца предмета
@@ -21,18 +24,22 @@ contract RentalPlatform {
         uint256 durationDays; // Длительность аренды
     }
 
+    address public admin;
     uint256 public nextItemId = 1; // Счётчик для уникальных идентификаторов предметов
     uint256 public nextRentId = 0; // Счётчик для аренд предметов
     mapping(uint256 => RentalItem) public rentalItems; // Хранение данных о предметах
     mapping(address => uint256[]) public rentalForUser; // История аренд для каждого пользователя
     mapping(address => uint256[]) public rentedFromUser; // Какие предметы были арендованы у пользователя
-    mapping(address => uint256) public balances; // Балансы владельцев
     RentalRecord[] public allRentalRecords; // Общая история аренд
 
     event ItemListed(uint256 indexed itemId, address indexed owner, string name, string description, uint256 pricePerDay);
     event ItemRented(uint256 indexed itemId, address indexed renter, uint256 startDate, uint256 durationDays, uint256 totalCost);
     event RentalClosed(uint256 indexed itemId, address indexed renter);
-    event PaymentWithdrawn(address indexed user, uint256 amount);
+
+    constructor(uint256 initialSupply) {
+        admin = msg.sender;
+        _mint(msg.sender, initialSupply); // Выпуск токенов для администратора
+    }
 
     // Функция для добавления нового предмета
     function listItem(string memory name, string memory description, uint256 pricePerDay) external {
@@ -71,8 +78,8 @@ contract RentalPlatform {
         item.renter = msg.sender;
         item.startDate = block.timestamp;
         item.durationDays = durationDays;
-
-        balances[item.owner] += totalCost;
+        // Трансфер токенов от арендатора владельцу
+        _transfer(msg.sender, item.owner, totalCost);
         rentalForUser[msg.sender].push(nextRentId);
         rentedFromUser[item.owner].push(nextRentId);
 
@@ -124,16 +131,11 @@ contract RentalPlatform {
         return rentalForUser[user];
     }
 
-    // Функция для вывода средств владельцем предмета
-    function withdrawPayments() external {
-        uint256 amount = balances[msg.sender];
-        require(amount > 0, "No balance to withdraw");
-
-        balances[msg.sender] = 0;
-        payable(msg.sender).transfer(amount);
-
-        emit PaymentWithdrawn(msg.sender, amount);
-
-        closeExpiredRentals(); // Проверяем и завершаем истёкшие аренды
-    }
+   // Функция для выдачи средств
+   function giveTokensToUser(address _to, uint256 _amount) external {
+        require(msg.sender == admin, "This action is allowed only for admin");
+        require(_amount > 0, "Amount of investing should be more then 0");
+        require(balanceOf(admin) >= _amount, "Admin does not hame such amount of tokens");
+        _transfer(admin, _to, _amount);
+   }
 }
