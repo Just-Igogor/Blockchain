@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.0;
 
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.8/contracts/token/ERC20/ERC20.sol";
+
+//import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract RentalPlatform is ERC20("RentalPlatform", "RNP") {
     struct RentalItem {
