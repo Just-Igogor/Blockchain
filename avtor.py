@@ -182,8 +182,7 @@ class Ui_MainWindow_Avtor(QWidget):
                 self.lineEdit_5.setText("")
                 self.lineEdit_6.setText("")
 
-                address = self.lineEdit_4.text()
-                self.w2 = Ui_MainWindow_Base(address)
+                self.w2 = Ui_MainWindow_Base(eth_address)
                 self.w2.show()
                 """
                 self.base_window = QtWidgets.QMainWindow()
