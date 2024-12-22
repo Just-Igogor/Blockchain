@@ -14,14 +14,16 @@ from auth_manager import AuthManager
 from PyQt5.QtWidgets import QWidget
 
 
-class Ui_MainWindow_Base(QtWidgets.QWidget):
-    def __init__(self):
+class Ui_MainWindow_Base(QtWidgets.QMainWindow):
+    def __init__(self, address):
         super().__init__()
         self.api = API_RentalPlatform()
         self.auth_manager = AuthManager()
-        self.current_user = self.api.account()[1]
+        self.current_user = address
+        #self.current_user = self.api.account()[1]
         self.selected_row = -1
         self.selected_column = -1
+        self.setupUi(self)
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
