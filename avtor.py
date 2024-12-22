@@ -182,10 +182,15 @@ class Ui_MainWindow_Avtor(QWidget):
                 self.lineEdit_5.setText("")
                 self.lineEdit_6.setText("")
 
+                address = self.lineEdit_4.text()
+                self.w2 = Ui_MainWindow_Base(address)
+                self.w2.show()
+                """
                 self.base_window = QtWidgets.QMainWindow()
                 self.ui_base = Ui_MainWindow_Base()
                 self.ui_base.setupUi(self.base_window)
                 self.base_window.show()
+                """
             except Exception as e:
                 QtWidgets.QMessageBox.warning(None, "Ошибка", f"Не удалось разблокировать аккаунт: {str(e)}")
         else:
